@@ -2,6 +2,9 @@
 
 import 'package:flutter/material.dart';
 import '../widgets/image.dart';
+import 'dart:io';
+import 'package:provider/provider.dart';
+import '../providers/great_places.dart';
 
 class AddPlaces extends StatefulWidget {
   static const routename = "/addplace";
@@ -13,6 +16,22 @@ class AddPlaces extends StatefulWidget {
 
 class _AddPlacesState extends State<AddPlaces> {
   final TextEditingController _title = TextEditingController();
+  File? _pickedImage;
+
+  void _selectImage(File pickedImage) {
+    _pickedImage = pickedImage;
+  }
+
+  void _savePlace() {
+    if (_title.text.isEmpty || _pickedImage == null) {
+      return;
+    }
+    Provider.of<GreatPlaces>(context, listen: false)
+        .addPlace(_title.text, _pickedImage!);
+    Navigator.of(context).pop();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -29,18 +48,20 @@ class _AddPlacesState extends State<AddPlaces> {
                 children: [
                   TextField(
                     controller: _title,
+                    decoration:
+                        InputDecoration(label: Text("title of the place")),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  ImageInput()
+                  ImageInput(_selectImage)
                 ],
               ),
             ),
           )),
           RaisedButton(
-            onPressed: () {},
-            child: Text("Add Place"),
+            onPressed: _savePlace,
+            child: const Text("Add Place"),
           )
         ],
       ),

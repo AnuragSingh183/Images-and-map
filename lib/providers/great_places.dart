@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import '../models/place.dart';
+import 'dart:io';
 
 class GreatPlaces with ChangeNotifier {
-  List<Place> _items = [];
+  final List<Place> _items = [];
 
   List<Place> get items {
-    return [...items];
+    return [..._items];
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold();
+  void addPlace(String placetitle, File pickedImage) {
+    final newPlace = Place(
+        id: DateTime.now().toString(), title: placetitle, image: pickedImage);
+    _items.add(newPlace);
+    notifyListeners();
   }
 }

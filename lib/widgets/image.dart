@@ -1,12 +1,17 @@
+// ignore_for_file: deprecated_member_use, prefer_const_constructors, prefer_const_constructors_in_immutables
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart' as syspaths;
 
 class ImageInput extends StatefulWidget {
-  ImageInput({Key? key}) : super(key: key);
+  final Function onselectImage;
+  ImageInput(this.onselectImage);
 
   @override
-  State<ImageInput> createState() => _ImageInputState();
+  _ImageInputState createState() => _ImageInputState();
 }
 
 class _ImageInputState extends State<ImageInput> {
@@ -15,6 +20,15 @@ class _ImageInputState extends State<ImageInput> {
   Future _takePicture() async {
     final image = await ImagePicker()
         .pickImage(source: ImageSource.camera, maxWidth: 600);
+    setState(() {
+      _storedImage = File(image.toString());
+    });
+
+    final appDir = await syspaths.getApplicationDocumentsDirectory();
+    final filename = path.basename(image!.path);
+    final savedImage = await File(image.path).copy('${appDir.path}/$filename');
+    widget.onselectImage(
+        savedImage); //will forward the savedimage in onselectimage and will be forwarded to picked image
   }
 
   @override
